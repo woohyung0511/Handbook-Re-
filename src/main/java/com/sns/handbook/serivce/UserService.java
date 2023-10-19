@@ -53,16 +53,19 @@ public class UserService implements UserServiceInter {
 		return mapperInter.getUserByNum(user_num);
 	}
 
-	// 우형 시작
+	//커버 사진 변경
 	@Override
 	public void updateCover(String user_num, String user_cover) {
-		// TODO Auto-generated method stub
-		Map<String, String> map = new HashMap<>();
-		map.put("user_num", user_num);
-		map.put("user_cover", user_cover);
-
-		mapperInter.updateCover(map);
-
+		Map<String, String> params = createParamMap("user_num", user_num, "user_cover", user_cover);
+		mapperInter.updateCover(params);
+	}
+	//값 넘겨주기
+	private Map<String, String> createParamMap(String key1, String value1, String key2, String value2){
+		Map<String, String> map =new HashMap<>();
+		map.put(key1, value1);
+		map.put(key2, value2);
+		
+		return map;
 	}
 
 	@Override
@@ -71,16 +74,12 @@ public class UserService implements UserServiceInter {
 		return mapperInter.getAllUsers();
 
 	}
-
+	//프로필 사진 변경
 	@Override
 	public void updatePhoto(String user_num, String user_photo) {
 		// TODO Auto-generated method stub
-		Map<String, String> map = new HashMap<>();
-		map.put("user_num", user_num);
-		map.put("user_photo", user_photo);
-
-		mapperInter.updatePhoto(map);
-
+		Map<String, String> params  = createParamMap("user_num", user_num, "user_photo", user_photo);
+		mapperInter.updatePhoto(params);
 	}
 
 	@Override
