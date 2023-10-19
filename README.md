@@ -4,6 +4,20 @@
 <img src='https://github.com/ssangyongHandbook/handbook/assets/124232240/f086e79a-7b6b-4cdb-9502-65050c27db90' alt='handbook logo' width='400'>
 </div>
 <div>
+
+  ## 🚥 코드 컨벤션
+
+- 3개 이상의 데이터를 request로 받는 경우 DTO를 사용한다. 
+- if 또는 for 문의 뎁스는 최대 1개를 넘지 않는다. 
+- 레이어간 서로 다른 DTO가 활용 되어야 한다.
+- 디자인 패턴을 활용한다. 
+- 레이어드 아키텍처를 지향하고 최대한 인터페이싱하여 유연한 설계를 한다. 
+- JPA의 효율적인 사용을 위해 Domain 계층과 Entity를 분리하지 않되 최대한 Entity를 도메인 모델과 유사하게 설계한다. 
+- REST에 response와 request는 모두 명확해야한다. (true, false 금지)
+- Controller와 Service Dto는 REST Method로 구분한다. 
+- 비즈니스 로직이 길어지면 Facade를 고려한다.
+- 테스트 코드는 필수이다. 80% 이상을 고수하여야 한다. (서비스, 핸들러 등 기본 로직 단위 테스트와 통합 테스트는 필수)
+
   <h3>목차</h3>
   <hr>
   <ol>
