@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTDMapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sns.handbook.mapper.CommentalarmMapperInter">
+	<insert id="insertCommentAlarm" parameterType="CommentalarmDto">
+		insert into commentalarm values(null,#{receiver_num},#{comment_num},#{sender_num},#{comment_content},now())
+	</insert>
+	<select id="getAllCommentAlarm" parameterType="String" resultType="CommentalarmDto">
+		select * from commentalarm where receiver_num=#{receiver_num} order by commental_num asc
+	</select>
+	<select id="getTotalCountCommentAlarm" parameterType="String" resultType="int">
+		select count(*) from commentalarm where receiver_num=#{receiver_num}
+	</select>
+	<delete id="deleteAllCommentAlarm" parameterType="String">
+		delete from commentalarm where receiver_num=#{receiver_num}
+	</delete>
+</mapper>

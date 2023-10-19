@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTDMapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sns.handbook.mapper.MessageMapperInter">
+	<select id="selectMaxNum" resultType="int">
+		select max(mess_num) from message
+	</select>
+	<select id="selectAllChatMemeber" parameterType="Map" resultType="MessageDto">
+		select distinct mess_group,sender_num,receiver_num,mess_writeday from message 
+		<if test="other_name==null or other_name==''">
+			where (sender_num=#{user_num} or receiver_num=#{user_num})
+		</if>
+		<if test="other_name!=null and other_name!=''">
+			where (sender_num=#{user_num} and receiver_num=any(select user_num 
+			from user where user_name like concat ('%',#{other_name},'%'))) 
+			or (receiver_num=#{user_num} and sender_num=any(select user_num 
+			from user where user_name like concat ('%',#{other_name},'%')))
+		</if>
+		order by mess_writeday desc
+	</select>
+	<select id="selectRecentMessage" parameterType="Map" resultType="MessageDto">
+		select * from message where (sender_num=#{user_num} and receiver_num=#{other}) or (sender_num=#{other} and receiver_num=#{user_num}) order by mess_writeday desc limit 1
+	</select>
+	<select id="selectAllByGroup" parameterType="Map" resultType="MessageDto">
+		select * from message where mess_group=#{mess_group} and (sender_num=#{user_num} or receiver_num=#{user_num}) order by mess_writeday desc
+	</select>
+	<insert id="insertMessage" parameterType="MessageDto">
+		insert into message values(null,#{sender_num},#{receiver_num},#{mess_group},#{mess_content},now())
+	</insert>
+	<select id="getRecentGroup" resultType="int" parameterType="String">
+		select mess_group from message where sender_num=#{user_num} or receiver_num=#{user_num} order by mess_writeday desc limit 1
+	</select>
+	<delete id="deleteMessage" parameterType="String">
+		delete from message where mess_num=#{mess_num}
+	</delete>
+	<select id="getCountOfMessage" parameterType="Map" resultType="int">
+		select count(*) from message
+		where (sender_num=#{user_num} and receiver_num=#{other}) or (sender_num=#{other} and receiver_num=#{user_num})
+	</select>
+	<delete id="deleteMessageGroup" parameterType="int">
+		delete from message where mess_group=#{mess_group}
+	</delete>
+</mapper>

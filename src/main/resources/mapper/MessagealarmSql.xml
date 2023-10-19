@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTDMapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sns.handbook.mapper.MessagealarmMapperInter">
+	<insert id="insertMessAlarm" parameterType="Map">
+		insert into messagealarm values(null,#{receiver_num},#{sender_num},#{mess_group},#{chkcount})
+	</insert>
+	<select id="getMessAlarmCount" parameterType="int" resultType="int">
+		select count(*) from messagealarm where mess_group=#{mess_group};
+	</select>
+	<select id="getMessAlarm" parameterType="int" resultType="MessagealarmDto">
+		select * from messagealarm where mess_group=#{mess_group};
+	</select>
+	<update id="updateMessAlarmChkcount" parameterType="int">
+		update messagealarm set chkcount=chkcount+1 where mess_group=#{mess_group}
+	</update>
+	<update id="delteMessAlarm" parameterType="int">
+		delete from messagealarm where mess_group=#{mess_group}
+	</update>
+	<select id="getTotalCountMessAlarm" parameterType="String" resultType="int">
+		select count(*) from messagealarm where receiver_num=#{user_num}
+	</select>
+	<select id="getAllMessAlarm" parameterType="String" resultType="MessagealarmDto">
+		select * from messagealarm where receiver_num=#{user_num}
+	</select>
+</mapper>

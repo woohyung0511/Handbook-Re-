@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTDMapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sns.handbook.mapper.CommentMapperInter">
+	<select id="getMaxNum" resultType="int">
+		select ifnull(max(comment_num),0) from comment
+	</select>
+	
+	<update id="updateStep" parameterType="Map">
+		update comment set comment_step=comment_step+1 where comment_group=#{comment_group} and comment_step>#{comment_step}
+	</update>
+	
+	<insert id="insert" parameterType="CommentDto">
+		insert into comment value(null,#{user_num},#{post_num},#{guest_num},#{comment_content},#{comment_group},#{comment_step},#{comment_level},now())
+	</insert>
+	
+	<delete id="delete" parameterType="String">
+		delete from comment where comment_num=#{comment_num}
+	</delete>
+	
+	<delete id="deleteGroup" parameterType="int">
+		delete from comment where comment_group=#{comment_group}
+	</delete>
+	
+	<select id="getData" parameterType="String" resultType="CommentDto">
+		select * from comment where comment_num=#{comment_num}
+	</select>
+	
+	<select id="getDataGroupStep" parameterType="Map" resultType="CommentDto">
+		select * from comment where comment_group=#{comment_group} and comment_step>#{comment_step} order by comment_step
+	</select>
+	
+	<update id="update" parameterType="CommentDto">
+		update comment set comment_content=#{comment_content} where comment_num=#{comment_num}
+	</update>
+	
+	<select id="selectScroll" parameterType="Map" resultType="CommentDto">
+		select * from comment where post_num=#{post_num} order by comment_group desc,comment_step asc limit 8 offset #{offset}
+	</select>
+	
+	<select id="selectGuestScroll" parameterType="Map" resultType="CommentDto">
+		select * from comment where guest_num=#{guest_num} order by comment_group desc,comment_step asc limit 8 offset #{offset}
+	</select>
+	
+	<select id="getAllDatas"  resultType="CommentDto">
+		select * from comment 
+	</select>
+	
+	
+	<!-- 댓글 좋아요 sql문 -->
+	<insert id="insertLike" parameterType="CommentlikeDto">
+		insert into commentlike value(null,#{user_num},#{comment_num})
+	</insert>
+	
+	<delete id="deleteLike" parameterType="Map">
+		delete from commentlike where user_num=#{user_num} and comment_num=#{comment_num}
+	</delete>
+	
+	<select id="getTotalLikes" resultType="int" parameterType="String">
+		select count(*) from commentlike where comment_num=#{comment_num}
+	</select>
+	
+	<select id="getLikeCheck" resultType="int" parameterType="Map">
+		select count(*) from commentlike where user_num=#{user_num} and comment_num=#{comment_num} 
+	</select>
+	
+	<!-- 댓글 총 개수 -->
+	<select id="getTotalCount" resultType="int" parameterType="String">
+		select count(*) from comment where post_num=#{post_num}
+	</select>
+	
+	<select id="getTotalGuestCount" resultType="int" parameterType="String">
+		select count(*) from comment where guest_num=#{guest_num}
+	</select>
+	
+	
+	<!-- 방명록 데이터 얻기 -->
+	<select id="getDataByGuestNum" resultType="GuestbookDto" parameterType="String">
+	   select * from guestbook where guest_num=#{guest_num}
+	</select>
+</mapper>

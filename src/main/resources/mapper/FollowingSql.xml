@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTDMapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sns.handbook.mapper.FollowingMapperInter">
+	<!-- 팔로잉체크(내기준) -->
+	<select id="checkFollowing" resultType="int" parameterType="Map">
+		select count(*) from following where from_user=#{from_user} and to_user=#{to_user}
+	</select>
+	
+	<!-- 팔로잉체크(상대기준) -->
+	<select id="checkFollower" resultType="int" parameterType="Map">
+		select count(*) from following where from_user=#{from_user} and to_user=#{to_user}
+	</select>
+	
+	<!-- 내가 팔로잉한 사람의 수 -->
+	<select id="getTotalFollowing" resultType="int" parameterType="String">
+		select count(*) from following where from_user=#{from_user}
+	</select>
+	
+	<!-- 나를 팔로우한 사람의 수 -->
+	<select id="getTotalFollower" resultType="int" parameterType="String">
+		select count(*) from following where to_user=#{to_user}
+	</select>
+	
+	<!-- 내가 팔로우한 사람 리스트 출력 -->
+	<select id="getFollowList" parameterType="Map" resultType="FollowingDto">
+		select * from following where from_user =#{from_user} limit 8 offset #{offset}
+	</select>
+	
+	<!-- 나를 팔로잉한 사람의 수 -->
+	<select id="getFollowingList" resultType="FollowingDto" parameterType="Map">
+		select * from following where to_user=#{to_user} limit 8 offset #{offset}
+	</select>
+	
+	<!-- 함께 아는 친구 인원 수 출력 -->
+	<select id="togetherFollow" resultType="int" parameterType="Map">
+		select count(*) from following where to_user = #{to_user} and from_user in (select to_user from following where from_user = #{from_user} )
+	</select>
+	
+	<!-- 팔로잉하기 -->
+	<insert id="insertFollowing" parameterType="FollowingDto">
+		insert into following value(null,#{from_user},#{to_user})
+	</insert>
+	
+	<!-- 팔로잉취소 -->
+	<delete id="deleteFollowing" parameterType="Map">
+		delete from following where to_user=#{to_user} and from_user=#{from_user}
+	</delete>
+	
+	
+	<!-- 친구 검색 기능 -->
+	<select id="followSearch" resultType="FollowingDto"  parameterType="Map">
+		select * from following 
+		where to_user = any(select user_num from user where user_name like concat('%', #{searchword}, '%')) <!-- 상대 이름 --> 
+		and from_user = #{from_user} <!-- 내 번호 -->
+		order by fing_num desc limit 8 offset #{offset} 
+	</select>
+	
+	<!-- 팔로워 검색 기능 -->
+	<select id="followerSearch" resultType="FollowingDto"  parameterType="Map">
+		select * from following 
+		where from_user = any(select user_num from user where user_name like concat('%', #{searchword}, '%')) <!-- 상대 이름 --> 
+		and to_user = #{to_user} <!-- 내 번호 -->
+		order by fing_num desc limit 8 offset #{offset} 
+	</select>
+	
+	
+	<!-- 팔로워 추천 -->
+	<!-- <select id="followRecommend" resultType="FollowingDto" parameterType="Map">
+		select to_user from following
+		where from_user=any(select to_user from following
+		where from_user=#{from_user}) and from_user!=#{from_user} and to_user!=#{from_user}
+		and to_user not in(select to_user from following
+		where from_user=#{from_user})
+		group by to_user
+		order by count(to_user) desc
+		limit 1 offset #{offset}
+	</select> -->
+	
+	<!-- 내가 팔로우를 안했고 내 친구들도 팔로우를 안한 사람들의 to_user를 뽑는다 -->
+	<!-- <select id="followRandom" resultType="UserDto" parameterType="Map">
+		select * from user
+		where user_num NOT IN(select to_user from following where from_user=#{from_user})
+		and user_num NOT IN(select to_user from following where from_user in(select to_user from following where from_user=#{from_user}))
+		and user_num != #{from_user}
+		limit 1 offset #{offset}
+	</select> -->
+
+	<!-- 팔로우 추천 합친거 -->
+	<select id="followRecommend" resultType="UserDto" parameterType="Map">
+	 	select user.* from user
+	 	left join following on user.user_num = following.to_user and following.from_user = #{from_user}
+	 	where following.from_user is null and user.user_num != #{from_user}
+	 	<if test = "searchword != null">
+	 		and user.user_name like concat('%', #{searchword}, '%')
+	 	</if> 
+	 	order by(
+	 		select count(to_user)
+	 		from following
+	 		where to_user = user.user_num
+	 	)desc limit 8 offset #{offset}
+	</select>
+	
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+"-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+"http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<!-- tiles 경로 설정 -->
+<tiles-definitions>
+	<definition name="layout" template="/WEB-INF/layout/layout.jsp">
+		<put-attribute name="title" value="/WEB-INF/layout/title.jsp"/>
+		<put-attribute name="menu" value="/WEB-INF/layout/menu.jsp"/>
+		<put-attribute name="sideinfo" value="/WEB-INF/layout/sideinfo.jsp"/>
+		<put-attribute name="main" value="/WEB-INF/layout/main.jsp"/>
+	</definition>
+	
+	<definition name="layout2" template="/WEB-INF/layout/layout2.jsp">
+		<put-attribute name="title" value="/WEB-INF/layout/title.jsp"/>
+		<!-- <put-attribute name="menu" value="/WEB-INF/layout/menu.jsp"/>
+		<put-attribute name="sideinfo" value="/WEB-INF/layout/sideinfo.jsp"/> -->
+		<put-attribute name="main" value="/WEB-INF/layout/main.jsp"/>
+	</definition>
+	
+	<!-- tiles매핑경로 설정 -->
+	<!--<definition name="home.tiles" extends="layout1">
+		<put-attribute name="main" value="/WEB-INF/layout/main.jsp"/>
+	</definition>
+	
+	<definition name="ipgolist.tiles" extends="layout1">
+		<put-attribute name="main" value="/WEB-INF/ipgo/ipgolist.jsp"/>
+	</definition>-->
+	
+	<!-- wild card_macro설정 -->
+	<definition name="/*/*" extends="layout">
+		<put-attribute name="main" value="/WEB-INF/{1}/{2}.jsp"></put-attribute>
+		<put-attribute name="sideinfo" value="/WEB-INF/layout/sideinfo.jsp"/>
+		<put-attribute name="menu" value="/WEB-INF/layout/menu.jsp"/>
+		<put-attribute name="title" value="/WEB-INF/layout/title.jsp"/>
+	</definition>
+	
+	<definition name="/sub/*/*" extends="layout2">
+		<put-attribute name="main" value="/WEB-INF/{1}/{2}.jsp"></put-attribute>
+	</definition>
+	
+</tiles-definitions>

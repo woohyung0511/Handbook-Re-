@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTDMapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sns.handbook.mapper.PostMapperInter">
+	<select id="getTotalCount" resultType="int">
+		select count(*) from post
+	</select>
+	<insert id="insertPost" parameterType="PostDto">
+		insert into post(user_num,post_content,post_file,post_access,post_writeday) values (#{user_num},#{post_content},#{post_file},#{post_access},now())
+	</insert>
+	
+	
+	
+	
+	
+	
+	
+	<!-- 검색 기능 추가 파라미터값 변경 -->
+<!-- 	<select id ="postList" parameterType="Map" resultType="PostDto">
+	select * from post 
+	where post_access Not in ("onlyme") and post_num Not in (select post_num from post where post_access="follower"
+and user_num in (select user_num from user where user_num Not in ("#{user_num}") and user_num Not in (select to_user from following where from_user=#{from_user}))
+	
+	<if test="searchcolumn!=null and searchword!=null">
+		<if test="searchcolumn=='post_content'">
+			or ${searchcolumn} like concat('%', #{searchword}, '%')
+		</if>
+		<if test="searchcolumn=='user_name'">
+			or user_num = any(select user_num from user where user_name = #{searchword})
+		</if>
+	</if>
+	order by post_writeday desc limit 10 offset #{offset} 
+	 
+	 
+	</select> -->
+	
+	
+	
+	<select id="postList" parameterType="Map" resultType="PostDto">
+SELECT *
+FROM post
+WHERE (post_access = 'all'
+  OR (post_access = 'follower' AND (user_num = #{user_num} OR user_num IN (
+    SELECT to_user
+    FROM following
+    WHERE from_user = #{user_num}
+  ))))
+<if test="searchcolumn != null and searchword != null">
+  <if test="searchcolumn=='post_content'">
+     AND ${searchcolumn} LIKE CONCAT('%', #{searchword}, '%')
+  </if>
+  <if test="searchcolumn=='user_name'">
+     AND user_num = ANY(SELECT user_num FROM user WHERE user_name LIKE CONCAT('%', #{searchword}, '%'))
+  </if>
+</if>
+ORDER BY CASE 
+  WHEN post_writeday >= DATE_SUB(NOW(), INTERVAL 24 HOUR) AND user_num = #{user_num} THEN 0
+  WHEN post_writeday >= DATE_SUB(NOW(), INTERVAL 24 HOUR) AND user_num IN (
+    SELECT to_user
+    FROM following
+    WHERE from_user = #{user_num}
+  ) THEN 0
+  ELSE 1
+END, post_writeday DESC,post_num desc
+LIMIT 10
+OFFSET #{offset}
+  
+</select>
+	
+	
+	
+	<delete id="deletePost" parameterType="String">
+	delete from post where post_num=#{post_num} 
+	</delete>
+	
+	
+	<!-- 이미지파일 수정 -->
+	<update id="updatePhoto" parameterType="Map">
+	  update post set post_file=#{post_file} where post_num=#{post_num}
+	</update>
+	
+	<!-- 수정 -->
+	<update id="updatePost" parameterType="PostDto">
+	  update post set post_content=#{post_content},post_access=#{post_access} where post_num=#{post_num}
+	</update>
+	
+	<select id="getDataByNum" resultType="PostDto" parameterType="String">
+	   select * from post where post_num=#{post_num}
+	</select>
+	
+		<select id="checklogin" resultType="int" parameterType="Map">
+		select count(*) from post where post_num=#{post_num} and user_num=#{user_num}
+	</select>
+	
+</mapper>

@@ -1,0 +1,42 @@
+#tomcat port
+server:
+  port: 7777
+#jsp
+spring:
+  #mvc:
+    #view:
+      #prefix: /WEB-INF/
+      #suffix: .jsp
+  #영상 올릴 용량 추가
+  servlet:
+    multipart:
+      enabled: true
+      max-request-size: 1000MB
+      max-file-size: 1000MB
+  devtools:
+    livereload:
+      enabled: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: handbookspring@gmail.com
+    password: suzvlmahjrjfxsxl
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
+          
+#mysql
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://handbook.car3oj5eeydj.ap-northeast-2.rds.amazonaws.com:3306/handbook?serverTimezone=Asia/Seoul
+    username: handbook
+    password: rAkilcwjyB3c5aX
+    
+#mybatis
+mybatis:
+  type-aliases-package: com.sns.handbook.*
+  mapper-locations:
+  - /mapper/**/*.xml #mapper 폴더 안에 어느 폴더에 있든 xml로 끝나는 파일      

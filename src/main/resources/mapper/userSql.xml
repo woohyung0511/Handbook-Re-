@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTDMapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sns.handbook.mapper.UserMapperInter">
+	<select id="getTotalCount" resultType="int">
+		select count(*) from user
+	</select>
+	
+	<!-- id와 pass 파라미터로 넘겨서 (map) 1 or 0 반환
+	1이면 있는 계정 0이면 없는 계정
+	-->
+	<select id="loginIdPassCheck" parameterType="Map" resultType="int">
+		select count(*) from user where user_id=#{user_id} and user_pass=#{user_pass}
+	</select>
+	
+	<!-- 예지 -->
+	<select id="getUserById" parameterType="String" resultType="UserDto">
+		select * from user where user_id=#{user_id}
+	</select>
+	<select id="getUserByNum" parameterType="String" resultType="UserDto">
+		select * from user where user_num=#{user_num}
+	</select>
+
+	
+	<!-- 우형 시작 -->
+	<!-- 마이페이지 커버 사진 변경 -->
+	<update id="updateCover" parameterType="Map">
+		update user set user_cover=#{user_cover} where user_num=#{user_num}
+	</update>
+	
+	<!-- 전체 유저 num 값 넘겨주기 -->
+	<select id="getAllUsers" resultType="UserDto">
+		select * from user order by user_num asc
+	</select>
+	
+	<!-- 프사 업뎃 -->
+	<update id="updatePhoto" parameterType="Map">
+		update user set user_photo=#{user_photo} where user_num=#{user_num}
+	</update>
+	
+	<!-- 마이페이지 게시글 가져오기 -->
+	<select id="getPost" parameterType="String" resultType="PostDto">
+		select user_num,post_num,post_content,post_access,post_file,post_writeday from post where user_num=#{user_num} order by post_num desc
+	</select>
+	
+	<!-- 정보 수정 -->
+	<update id="updateUserInfo" parameterType="UserDto">
+		update user set user_addr=#{user_addr},user_email=#{user_email},user_hp=#{user_hp} where user_num=#{user_num}
+	</update>
+	
+	<!-- 마이페이지 팔로워 목록 9명만 출력 -->
+	<select id="getFollowList" parameterType="Map" resultType="FollowingDto">
+		select * from following where from_user =#{from_user} limit 9 offset #{offset}
+	</select>
+	
+	<!-- 방명록 작성 -->
+	<insert id="insertGuestBook" parameterType="GuestbookDto">
+		insert into guestbook (write_num,owner_num,guest_content,guest_file,guest_writeday) values (#{write_num},#{owner_num},#{guest_content},#{guest_file},now())
+	</insert>
+	
+	<!-- 방명록 삭제 -->
+	<delete id="deleteGuestBook" parameterType="String">
+		delete from guestbook where guest_num=#{guest_num}
+	</delete>
+	
+	<!-- 방명록 수정 값 불러오기 -->
+	<select id="getDataByGuestNum" parameterType="String" resultType="GuestbookDto">
+		select * from guestbook where guest_num=#{guest_num}
+	</select>
+	
+	<!-- 방명록 수정 -->
+	<update id="updateGuestBook" parameterType="GuestbookDto">
+		update guestbook set guest_content=#{guest_content},guest_file=#{guest_file} where guest_num=#{guest_num}
+	</update>
+	
+	<!-- 방명록 리스트 -->
+	<select id="getGuestPost" parameterType="String" resultType="GuestbookDto">
+		select guest_num,write_num,owner_num,guest_content,guest_file,guest_access,guest_writeday from guestbook where owner_num=#{owner_num} order by guest_num desc
+	</select>
+	
+	<!-- 접근권한에 따른 게시글 가져오기(예지가 여기 수정함) -->
+	<select id="selectPostsByAccess" parameterType="String" resultType="PostDto">
+  		select * from post where (user_num = #{user_num}) and (post_access = 'all' or (post_access = 'onlyme' and #{user_num} = #{from_user})
+      	or (post_access = 'follower' and (#{user_num} = #{from_user} or #{from_user} in (select from_user from following where to_user = #{user_num}))))
+	</select>
+	
+	<!-- 접근권한에 따른 방명록 가져오기 -->
+	<select id="selectGuestbookByAccess" parameterType="Map" resultType="GuestbookDto">
+	  select * from guestbook where 
+	  <if test="owner_num==user_num">
+	  		owner_num=#{owner_num}
+	  </if>
+	  <if test="owner_num!=user_num">
+	  		(write_num=#{user_num} and owner_num=#{owner_num})
+	  </if>
+	</select>
+	
+	<!-- 우형 끝 -->
+
+	<!-- 이 아래는 김희수가 구현함. -->
+	<!-- 회원 가입 -->
+	<insert id="insertUserInfo" parameterType="UserDto">
+		insert into user (user_id,user_pass,user_name,user_hp,user_addr,user_email,user_joindate,user_gender,user_birth) values(#{user_id},#{user_pass},#{user_name},#{user_hp},#{user_addr},#{user_email},now(),#{user_gender},#{user_birth});
+	</insert>
+
+	<!-- Oauth 회원 가입 -->
+	<insert id="insertOauthUserInfo" parameterType="UserDto">
+		insert into user (user_id,user_pass,user_name,user_hp,user_addr,user_email,user_joindate,user_gender,user_birth) values(#{user_id},#{user_pass},#{user_name},#{user_hp},#{user_addr},#{user_email},now(),#{user_gender},#{user_birth});
+	</insert>
+	
+	<!-- id로 dto 반환 -->
+	<select id="getUserDtoById" parameterType="String" resultType="UserDto">
+		select * from user where user_id=#{user_id}
+	</select>
+	
+	<!-- email넘겨서 이미 등록된 이메일이면 0 없는 이메일이면 1 -->
+	<select id="loginEmailCheck" parameterType="String" resultType="int">
+		select count(*) from user where user_email=#{user_email}
+	</select>
+	
+	<!-- user_email 넘기면 user_num 반환 -->
+	<select id="getUserIdByEmail" parameterType="String" resultType="String">
+		select user_num from user where user_email=#{user_email}
+	</select>
+	
+	<!-- 비밀번호 업데이트 -->
+	<update id="updatePassword" parameterType="Map">
+		update user set user_pass = #{user_pass} where user_num=#{user_num}
+	</update>
+	
+	<!-- 이름, 폰번호 입력해서 email 찾기 -->
+	<select id="getUserEmailBynamehp" resultType="String" parameterType="Map">
+		select user_email from user where user_hp = #{user_hp} and user_name=#{user_name}
+	</select>
+	
+	<!-- 입력한 아이디 있는지 체크 -->
+	<select id="loginIdCheck" parameterType="String" resultType="int">
+		select count(*) from user where user_id=#{user_id}
+	</select>
+	
+	<!-- 회원탈퇴 -->
+	<delete id="userDelete" parameterType="String">
+		delete from user where user_num = #{user_num}
+	</delete>
+
+	<!-- 회원가입 시 이메일 인증을 위한 랜덤번호 user mail_key 컬럼에 저장 -->
+	<update id="updateMailKey" parameterType="UserDto">
+		update user set mail_key=#{mail_key} where user_email=#{user_email}
+	</update>
+
+	<!-- 메일 인증하면 mail_auth컬럼 1로 바꿈-->
+	<update id="updateMailAuth" parameterType="UserDto">
+		update user set mail_auth=1 where user_email=#{user_email} and mail_key=#{mail_key}
+	</update>
+
+	<!-- 소셜 로그인 하면 자동으로 mail_auth컬럼 1로 바꿈-->
+	<update id="updateMailAuthByOauthLogin" parameterType="String">
+		update user set mail_auth=1 where user_num=#{user_num}
+	</update>
+
+	<!-- 이메일 인증 했으면 0반환, 로그인 할때 인증했는지 안했는지 체크하기 위해 -->
+	<select id="emailAuthFail" parameterType="String" resultType="int">
+		select count(*) from user where user_num=#{user_num} and mail_auth=1
+	</select>
+
+	<!-- 비밀번호만 수정 -->
+	<update id="updateUserPass" parameterType="UserDto">
+		update user set user_pass=#{user_pass} where user_num=#{user_num}
+	</update>
+	<!-- 여기 위까지는 김희수가 구현함. -->
+	
+	<!-- 예지 -->
+	<!-- 이름에 해당하는 사용자 출력 -->
+	<select id="getUserByName" parameterType="String" resultType="UserDto">
+		select * from user where user_name like concat('%',#{user_name},'%')
+	</select>
+
+</mapper>

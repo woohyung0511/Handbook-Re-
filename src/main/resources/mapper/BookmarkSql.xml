@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTDMapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sns.handbook.mapper.BookmarkMapperInter">
+
+	<!-- 즐겨 찾기 추가 -->
+	<insert id="insertBookmark" parameterType="BookmarkDto">
+		insert into bookmark value(null,#{owner_num},#{bfriend_num})
+	</insert>
+	
+	<!-- 즐겨 찾기 취소 -->
+	<delete id="deleteBookmark" parameterType="Map">
+		delete from bookmark where owner_num = #{owner_num} and bfriend_num = #{bfriend_num}
+	</delete>
+	
+	<!-- 즐겨 찾기 몇 명에서 했는지 확인  -->
+	<select id="bookmarkCheck" parameterType="Map" resultType="int">
+		select count(*) from bookmark where owner_num = #{owner_num} and bfriend_num = #{bfriend_num}
+	</select>
+	
+	<!-- 즐겨찾기 한 사람들의 게시글 보기 -->
+	<select id="bookmarkPost" parameterType="Map" resultType="PostDto">
+	SELECT p.*
+	FROM bookmark b
+	JOIN user u ON b.bfriend_num = u.user_num
+	JOIN post p ON u.user_num = p.user_num
+	WHERE b.owner_num = ${owner_num}
+	AND (
+	p.post_access = 'all' OR
+	(p.post_access = 'follower' AND EXISTS (SELECT 1 FROM following WHERE from_user = p.user_num AND to_user = ${owner_num})) OR
+	(p.post_access = 'onlyme' AND p.user_num = ${owner_num}))
+	ORDER BY p.post_writeday DESC
+	limit 10 offset #{offset}
+	</select>
+	
+</mapper>

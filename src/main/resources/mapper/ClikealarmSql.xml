@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTDMapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sns.handbook.mapper.ClikealarmMapperInter">
+	<insert id="insertClikealarm" parameterType="ClikealarmDto">
+		insert into clikealarm values(null,#{receiver_num},#{sender_num},#{comment_num},now())
+	</insert>
+	<select id="getTotalCountClikealarm" parameterType="String" resultType="int">
+		select count(*) from clikealarm where receiver_num=#{receiver_num}
+	</select>
+	<select id="getAllClikealarm" parameterType="String" resultType="ClikealarmDto">
+		select * from clikealarm where receiver_num=#{receiver_num} order by clikeal_num asc
+	</select>
+	<select id="findSameClikealarm" parameterType="Map" resultType="int">
+		select count(*) from clikealarm where receiver_num=#{receiver_num} and sender_num=#{sender_num} and comment_num=#{comment_num}
+	</select>
+	<delete id="deleteClikealarm" parameterType="String">
+		delete from clikealarm where clikeal_num=#{clikeal_num}
+	</delete>
+	<select id="getOneClikealarm" parameterType="Map" resultType="ClikealarmDto">
+		select * from clikealarm where receiver_num=#{receiver_num} and sender_num=#{sender_num} and comment_num=#{comment_num}
+	</select>
+	<delete id="deleteAllClikealarm" parameterType="String">
+		delete from clikealarm where receiver_num=#{receiver_num}
+	</delete>
+</mapper>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTDMapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sns.handbook.mapper.FollowalarmMapperInter">
+	<insert id="insertFollowalarm" parameterType="FollowalarmDto">
+		insert into followalarm values(null,#{receiver_num},#{sender_num},now())
+	</insert>
+	<select id="getAllFollowalarm" parameterType="String" resultType="FollowalarmDto">
+		select * from followalarm where receiver_num=#{receiver_num} order by followal_num desc
+	</select>
+	<select id="getAllCountFollowalarm" parameterType="String" resultType="int">
+		select count(*) from followalarm where receiver_num=#{receiver_num}
+	</select>
+	<select id="findSameFollowalarm" parameterType="Map" resultType="int">
+		select count(*) from followalarm where receiver_num=#{receiver_num} and sender_num=#{sender_num}
+	</select>
+	<select id="getFollowalarmByNum" parameterType="Map" resultType="FollowalarmDto">
+		select * from followalarm where receiver_num=#{receiver_num} and sender_num=#{sender_num}
+	</select>
+	<delete id="deleteFollowalarm" parameterType="String">
+		delete from followalarm where followal_num=#{followal_num}
+	</delete>
+	<delete id="deleteAllFollowalarm" parameterType="String">
+		delete from followalarm where receiver_num=#{receiver_num}
+	</delete>
+</mapper>

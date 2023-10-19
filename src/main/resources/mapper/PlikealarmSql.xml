@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTDMapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sns.handbook.mapper.PlikealarmMapperInter">
+	<insert id="insertPlikealarm" parameterType="PlikealarmDto">
+		insert into plikealarm values(null,#{receiver_num},#{sender_num},#{post_num},#{guest_num},now())
+	</insert>
+	<select id="getTotalCountPlikealarm" parameterType="String" resultType="int">
+		select count(*) from plikealarm where receiver_num=#{receiver_num}
+	</select>
+	<select id="getAllPlikealarm" parameterType="String" resultType="PlikealarmDto">
+		select * from plikealarm where receiver_num=#{receiver_num} order by plikeal_num asc
+	</select>
+	<select id="findSamePlikealarm" parameterType="Map" resultType="int">
+		select count(*) from plikealarm where receiver_num=#{receiver_num} and sender_num=#{sender_num} and (post_num=#{post_num} or guest_num=#{guest_num})
+	</select>
+	<delete id="deletePlikealarm" parameterType="String">
+		delete from plikealarm where plikeal_num=#{plikeal_num}
+	</delete>
+	<select id="getOnePlikealarm" parameterType="Map" resultType="PlikealarmDto">
+		select * from plikealarm where receiver_num=#{receiver_num} and sender_num=#{sender_num} and (post_num=#{post_num} or guest_num=#{guest_num})
+	</select>
+	<delete id="deleteAllPlikeAlarm" parameterType="String">
+		delete from plikealarm where receiver_num=#{receiver_num}
+	</delete>
+</mapper>
